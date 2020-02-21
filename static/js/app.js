@@ -1,10 +1,18 @@
 function plotCharts(sample){	
 	// Use d3.json() to fetch data from JSON file
 	d3.json("data/samples.json").then(function(importedData){
-			var otu_ids = importedData.samples[0].otu_ids;
-			var otu_labels = importedData.samples[0].otu_labels;
-			var sample_values = importedData.samples[0].sample_values;
-		  
+
+			var samples=importedData.samples;
+			resultsArr=samples.filter(samObj => samObj.id==sample);
+			var metadata=importedData.metadata;
+			resultsMetaArr=metadata.filter(samObj => samObj.id==sample);
+			// console.log(resultsMetaArr)
+
+			var otu_ids = resultsArr[0].otu_ids;
+			var otu_labels = resultsArr[0].otu_labels;
+			var sample_values = resultsArr[0].sample_values;
+			var wfreq = resultsMetaArr[0].wfreq;
+		  	// console.log(sample_values)
 			// Create bar chart
 
 			var trace1 = {
@@ -43,15 +51,18 @@ function plotCharts(sample){
 
 			var layout2 = {
 				hovermode: 'closest',
-				xaxis: {title: 'OTU ID'}
+				xaxis: {title: 'OTU ID'},
+				yaxis: {title: 'OTU Count'}
 			  };
 
 			Plotly.newPlot('bubble', data2, layout2);
 			
+			//Create gauge chart
+			
 			var data3 = [
 				{
 					domain: { x: [0, 1], y: [0, 1] },
-					value: importedData.metadata[0].wfreq,
+					value: wfreq,
 					title: { text: "Belly Button Washing Frequency (Scrubs per week)" },
 					type: "indicator",
 					mode: "gauge+number",
@@ -80,14 +91,43 @@ function plotCharts(sample){
 	});
 }
 
+/*function populateMetadata(sample){
+	
+	// Use d3.json() to fetch data from JSON file
+	d3.json("data/samples.json").then(function(importedData){
+		var metadata = importedData.metadata;
+		resultsMetaArr = metadata.filter(samObj => samObj.id==sample);
+		var panel = d3.select("#sample-metadata").append("p");
+		panel.html("");
+		panel.html(`${resultsMetaArr[0]}`);  
+	  
+    })
+
+}*/
+
 function init(){
 	d3.json("data/samples.json").then(function(importedData){
-		
+		var selector=d3.select("#selDataset")
 		var names = importedData.names;
+		//var metadata = importedData.metadata;
+		//resultsMetaArr=metadata.filter(samObj => samObj.id==sample);
+		// console.log(names)
+		names.forEach((sample) => {
+			selector.append("option").text(sample).property("value", sample)
+		})
 		
 		const defaultValue = names[0];
+		//const defaultid = resultsMetaArr[0].id;
+		//console.log(defaultid);
 		plotCharts(defaultValue);
+		//populateMetadata(defaultid)
     });
+}
+
+function optionChanged(newSample){
+	//console.log(newSample)
+	plotCharts(newSample);
+	//populateMetadata(newSample);
 }
 
 init();
