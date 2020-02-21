@@ -6,13 +6,12 @@ function plotCharts(sample){
 			resultsArr=samples.filter(samObj => samObj.id==sample);
 			var metadata=importedData.metadata;
 			resultsMetaArr=metadata.filter(samObj => samObj.id==sample);
-			// console.log(resultsMetaArr)
 
 			var otu_ids = resultsArr[0].otu_ids;
 			var otu_labels = resultsArr[0].otu_labels;
 			var sample_values = resultsArr[0].sample_values;
 			var wfreq = resultsMetaArr[0].wfreq;
-		  	// console.log(sample_values)
+		  	
 			// Create bar chart
 
 			var trace1 = {
@@ -125,7 +124,7 @@ function init(){
 }
 
 function optionChanged(newSample){
-	//console.log(newSample)
+	
 	plotCharts(newSample);
 	//populateMetadata(newSample);
 }
